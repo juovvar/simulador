@@ -1,0 +1,111 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+ul, ol { list-style: none; }
+a { text-decoration: none; }
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    padding: 10px;
+    font-family: 'Work Sans', sans-serif;
+    line-height: 20px;
+    font-size: 13px;
+    color: #4b4b4b;
+}
+
+/* Tipografias */
+h1 { color: #004884; font-family: 'Montserrat', sans-serif; line-height: 48px; font-size: 40px; font-weight: 600; }
+h2 { color: #004884; font-family: 'Montserrat', sans-serif; line-height: 44px; font-size: 32px; font-weight: 600; }
+h3 { color: #004884; font-family: 'Montserrat', sans-serif; line-height: 24px; font-size: 24px; font-weight: 600; }
+h4 { color: #000000; font-family: 'Montserrat', sans-serif; line-height: 30px; font-size: 20px; font-weight: 600; }
+h5 { color: #004884; font-family: 'Montserrat', sans-serif; line-height: 27px; font-size: 18px; font-weight: 600; }
+h6 { color: #004884; font-family: 'Work Sans', sans-serif; line-height: 24px; font-size: 16px; font-weight: 600; }
+
+.Txbloq { width: 60%; text-align: center; color: #222; padding: 2px 15px; margin-top: 10px; margin-bottom: 15px; font-size: 16px; font-weight: bold; background: #E1E1E1; border-bottom: 2px solid #1b4591; }
+.Txwarning { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; color: darkred; }
+.Txtitle14 { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 600; color: #021b28; }
+.Txtitle20 { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 600; color: #0a3952; text-shadow: 0px 2px 1px #222222a9; }
+.clic { cursor: pointer; }
+.clic:hover { color: #600948; font-style: oblique; text-decoration: underline #66a4d6; }
+
+/* Menu nav horizontal */
+#menu { background: #cac9f6; height: 45px; border-bottom: 3px solid #a180f5; }
+nav ul li { float: left; }
+nav ul li a { display: block; border-right: 1px solid #f9f8f8; padding: 5px 10px; cursor: pointer; width: 120px; color: #3b2e61; }
+nav ul li a:hover { font-size: 16px; color: #7357ba; }
+
+/* Componentes de contenido e Inputs */
+label { color: #4b4b4b; font-family: 'Montserrat', sans-serif; font-size: 14px; }
+
+/* Fuerza el estiramiento del campo y su contenedor */
+input, input[type="text"], #expressionInput {display: block !important; width: 75vw !important;max-width: 800px !important;min-width: 280px !important;height: 50px !important;font-size: 22px !important;font-weight: 500 !important;text-align: center !important;padding: 0 15px !important;overflow-x: auto !important;white-space:nowrap!important;border: #bababa solid 1px;border-radius: 8px !important;margin:15px auto 20px auto !important;box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+textarea { padding: 7px; border: #bababa solid 1px; border-radius: 5px; font-family: 'Work Sans', sans-serif; font-size: 14px; font-weight: 400; resize: none; }
+textarea:focus, input:focus, select:focus { border-color: rgb(51, 102, 204); outline: 0 none; box-shadow: 0 1px 1px rgba(51, 102, 204, 0.075), 0 0 8px rgba(51, 102, 204, 0.6); }
+select { padding: 2px; border: #bababa solid 1px; border-radius: 5px; font-family: 'Work Sans', sans-serif; font-size: 14px; font-weight: 400; }
+
+/* Tablas */
+.table-responsive-wrapper {width: 100%; max-width: 100%; overflow-x: auto; margin-top: 15px;}
+
+table { border: 1px solid #555; width: 100%; text-align: center; border-collapse: collapse; }
+th { background: #121b7b; color: #E1E1E1; padding: 8px; }
+td { border-top: 1px solid #ccc; padding: 6px; }
+.alt_green { color: green; }
+.alt_red { color: red; }
+
+/* Botones*/
+.Bt2 {background-color: #e0e0e0;border: none;border-radius: 10px;padding: 8px;cursor: pointer;box-shadow: 3px 3px 6px #bebebe, -3px -3px 6px #ffffff;transition: all 0.2s ease;display: flex;align-items: center;justify-content: center;margin: 4px;min-width: 40px;height: 40px;font-size: 15px;font-weight: 600;}
+.Bt2:active { box-shadow: inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff; transform: scale(0.95); }
+.Bt2:hover { background: #004884; color: #EFF3F5; }
+
+/* Botones de Accion (Borrar, Generar, Retroceder) - Separacion vertical agregada */
+.Bt2r {background-color: #ffeded;border: none;border-radius: 10px;padding: 8px;cursor: pointer;box-shadow: 3px 3px 6px #bebebe, -3px -3px 6px #ffffff;transition: all 0.2s ease;display: flex;align-items: center;justify-content: center;margin: 15px 4px 5px 4px !important; /* Margin-top aumentado para alejarse de los símbolos */min-width: 42px;height: 42px;font-size: 15px;font-weight: 600;}
+.Bt2r:active { box-shadow: inset 3px 3px 6px #d1bcbc, inset -3px -3px 6px #ffffff; transform: scale(0.95); }
+.Bt2r:hover { background: #be204a; color: #EFF3F5; }
+.Bt4b {background: #1b4591;padding: 0 22px;border: 0;border-radius: 8px;color: #fff;font-family: 'Montserrat', sans-serif;font-size: 15px;font-weight: 600;text-shadow: 1px 1px 1px #000;height: 42px;display: flex;align-items: center;justify-content: center;cursor: pointer;margin: 15px 4px 5px 4px !important; /* Margin-top aumentado para alejarse de los símbolos */box-shadow: 2px 3px 6px rgba(0,0,0,0.15);}
+.Bt4b:hover { background: #173b7d; color: #EFF3F5; }
+
+/* Contenedores Base */
+.Contptc { margin: 0 auto; width: auto; height: auto; display: flex; align-items: flex-start; justify-content: center; }
+.Contptl { margin: 0 auto; width: 100%; margin-top: 10px; height: 450px; display: flex; align-items: flex-start; justify-content: flex-start; }
+.Contvtc { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; }
+.Contvtl { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; }
+.Contvcc { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.Contvcl { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+.Contvcr { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; }
+
+.Conthtc { display: flex; align-items: flex-start; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.Conthtl { display: flex; align-items: flex-start; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
+.Conthtj { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.Conthcc { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+.Conthcl { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
+.Conthcr { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.Conthcj { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.Conthcs { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 8px; }
+/* Desbloquea el ancho del contenedor padre */
+.Contvcc, .Contptc, form {width: 100% !important;}
+/* Imagenes */
+.ImgLogo { width: 80px; height: 40px; }
+.ImgLog2 { width: 45px; height: 45px; }
+.ImgLog3 { width: 40px; height: 40px; }
+.ImgBt { border: none; padding: 0px; width: 25px; height: 25px; cursor: pointer; }
+.ImgBt35 { border: none; padding: 0px; width: 35px; height: 35px; cursor: pointer; }
+.Img20x20 { width: 20px; height: 20px; pointer-events: none; }
+.Img25x25 { width: 25px; height: 25px; }
+.Img30x30 { width: 30px; height: 30px; }
+.Img40x40 { width: 40px; height: 40px; }
+.Img45x45 { width: 45px; height: 45px; }
+
+/* Media Queries */
+@media (max-width: 1200px) { .Contptc, .Contptl { width: 95%; }}
+@media (max-width: 768px) { input, input[type="text"], #expressionInput {width: 95% !important;font-size: 16px !important;}}
+/* Ajuste automatico para pantallas pequeñas sin desbordamiento */
+@media (max-width: 650px) { input, input[type="text"], #expressionInput {width: 95% !important;font-size: 16px !important;height: 42px !important;}}
+
+/* Mantiene el contenedor al 100% */
+.Contvcc, .Contptc, form {width: 100% !important;}
+@media (max-width: 576px) { h1 { font-size: 24px; line-height: 32px; text-align: center; }}
+@media (max-width: 480px) { input, input[type="text"], #expressionInput {width: 90vw !important;font-size: 16px !important;height: 42px !important;}}

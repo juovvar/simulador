@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="img/logo.png">
+</head>
+<body class="Contvtc">
+
+<header class="Conthcc main-header">
+    <a href="/" class="header-link">
+        <h1>Simulador de tabla de verdad</h1>
+    </a>
+</header>
+
+<main class="Contvtc main-content">
+
+    <!-- Campo de entrada de la expresion -->
+    <div class="Conthcc input-wrapper">
+        <input type="text" id="expressionInput" class="app-input" placeholder="Ingrese la proposición lógica..." readonly>
+    </div>
+
+    <!-- Teclado de simbolos -->
+    <div class="Conthcc keypad-container">
+        <button class="Bt2" onclick="insertSymbol('(')">(</button>
+        <button class="Bt2" onclick="insertSymbol('[')">[</button>
+        <button class="Bt2" onclick="insertSymbol('{')">{</button>
+        <button class="Bt2" onclick="insertSymbol('}')">}</button>
+        <button class="Bt2" onclick="insertSymbol(']')">]</button>
+        <button class="Bt2" onclick="insertSymbol(')')">)</button>
+        <button class="Bt2" onclick="insertSymbol('~')">~</button>
+        <button class="Bt2" onclick="insertSymbol('∧')">∧</button>
+        <button class="Bt2" onclick="insertSymbol('∨')">∨</button>
+        <button class="Bt2" onclick="insertSymbol('Δ')">Δ</button>
+        <button class="Bt2" onclick="insertSymbol('→')">→</button>
+        <button class="Bt2" onclick="insertSymbol('↔')">↔</button>
+        <button class="Bt2" onclick="insertSymbol('p')">p</button>
+        <button class="Bt2" onclick="insertSymbol('q')">q</button>
+        <button class="Bt2" onclick="insertSymbol('r')">r</button>
+    </div>
+
+    <!-- Panel de control de acciones -->
+    <div class="Conthcc actions-container">
+        <button class="Bt2r" onclick="clearInput()" title="Limpiar todo">
+            <img src="img/delete.png" alt="Borrar" class="Img20x20">
+        </button>
+
+        <button class="Bt4b" onclick="generateTable()">Generar tabla</button>
+
+        <button class="Bt2" onclick="backspace()" title="Retroceder">
+            <img src="img/backspace.png" alt="Atrás" class="Img20x20">
+        </button>
+    </div>
+
+    <!-- Area de despliegue con contenedor responsivo de la Tabla -->
+    <div class="table-responsive-wrapper">
+        <div id="tableContainer" class="Contvcc">
+            <!-- La tabla generada se renderiza aqui -->
+        </div>
+    </div>
+
+</main>
+
+<script>
+    const input = document.getElementById('expressionInput');
+
+    function insertSymbol(symbol) {
+        input.value += symbol;
+    }
+
+    function clearInput() {
+        input.value = '';
+        document.getElementById('tableContainer').innerHTML = '';
+    }
+
+    function backspace() {
+        input.value = input.value.slice(0, -1);
+    }
+
+    function generateTable() {
+        const expr = input.value.trim();
+        if (!expr) {
+            document.getElementById('tableContainer').innerHTML =
+                '<p class="Txwarning">Por favor, ingrese una expresión proposicional.</p>';
+            return;
+        }
+
+        fetch('/api/evaluar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ expresion: expr })
+        })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error al procesar la expresión');
+                }
+                return data;
+            })
+            .then(data => renderTable(data))
+            .catch(err => {
+                document.getElementById('tableContainer').innerHTML =
+                    `<p class="Txwarning">${err.message}</p>`;
+            });
+    }
+
+    function renderTable(data) {
+        const container = document.getElementById('tableContainer');
+
+        let html = '<table>';
+
+        // Encabezado
+        html += '<thead><tr>';
+        data.headers.forEach(header => {
+            html += `<th>${header}</th>`;
+        });
+        html += '</tr></thead>';
+
+        // Filas
+        html += '<tbody>';
+        data.rows.forEach(row => {
+            html += '<tr>';
+            row.forEach((val, index) => {
+                if (index === row.length - 1) {
+                    const resultClass = (val === 'V') ? 'alt_green' : 'alt_red';
+                    html += `<td class="${resultClass}"><strong>${val}</strong></td>`;
+                } else {
+                    html += `<td>${val}</td>`;
+                }
+            });
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+
+        container.innerHTML = html;
+    }
+</script>
+</body>
+</html>
