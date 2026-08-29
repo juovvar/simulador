@@ -1,14 +1,14 @@
-# Etapa de compilacion con Maven
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# compilacion con JDK 21
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Etapa de ejecucion
-FROM eclipse-temurin:17-jre-alpine
+# ejecucion con JRE 21
+FROM eclipse-temurin:21-jre
 WORKDIR /app
-COPY --from=build /app/target/*.jar simulador-app.jar
+COPY --from=build /app/target/simulador-app-1.0-SNAPSHOT-jar-with-dependencies.jar simulador-app.jar
 
-# Comando para iniciar la aplicación
-ENTRYPOINT ["java", "-jar", "simulador-app.jar"]
+EXPOSE 8080
+CMD ["java", "-jar", "simulador-app.jar"]
