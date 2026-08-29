@@ -9,26 +9,24 @@ import java.util.concurrent.Executors;
 
 public class Main {
 
-    private static final int PORT = 8080;
-
     public static void main(String[] args) {
         try {
-            // Crea el servidor en el puerto 8080
-            HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
+            String portEnv = System.getenv("PORT");
+            int port = (portEnv != null && !portEnv.isEmpty()) ? Integer.parseInt(portEnv) : 8080;
+
+            // Esto permite trafico externo al simulador
+            HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
 
             // Enruta las peticiones
             server.createContext("/", new StaticFileHandler());
             server.createContext("/api/evaluar", new TruthTableHandler());
 
-            // Asigna un executor con pool de hilos para gestionar peticiones concurrentes
+            // Pool de hilos para gestionar peticiones concurrentes
             server.setExecutor(Executors.newFixedThreadPool(10));
 
             server.start();
 
-            System.out.println("==================================================");
-            System.out.println(" Servidor iniciado exitosamente.");
-            System.out.println(" Abre tu navegador en: http://localhost:" + PORT);
-            System.out.println("==================================================");
+            System.out.println(" Servidor iniciado exitosamente en el puerto: " + port);
 
         } catch (IOException e) {
             System.err.println("Error al iniciar el servidor HTTP: " + e.getMessage());
