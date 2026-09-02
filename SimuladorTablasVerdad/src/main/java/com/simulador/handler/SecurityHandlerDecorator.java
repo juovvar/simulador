@@ -20,6 +20,7 @@ public class SecurityHandlerDecorator implements HttpHandler {
                         "img-src 'self' data:; " +
                         "object-src 'none'; " +
                         "frame-ancestors 'none'; " +
+                        "form-action 'self'; " +
                         "base-uri 'self';"
         );
         exchange.getResponseHeaders().add("X-Frame-Options", "DENY");
