@@ -13,7 +13,15 @@ public class SecurityHandlerDecorator implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().add("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
+        exchange.getResponseHeaders().add("Content-Security-Policy",
+                "default-src 'self'; " +
+                        "script-src 'self'; " +
+                        "style-src 'self'; " +
+                        "img-src 'self' data:; " +
+                        "object-src 'none'; " +
+                        "frame-ancestors 'none'; " +
+                        "base-uri 'self';"
+        );
         exchange.getResponseHeaders().add("X-Frame-Options", "DENY");
         exchange.getResponseHeaders().add("X-Content-Type-Options", "nosniff");
         exchange.getResponseHeaders().add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");

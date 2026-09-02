@@ -24,32 +24,32 @@
 
     <!-- Teclado de simbolos -->
     <div class="Conthcc keypad-container">
-        <button class="Bt2" onclick="insertSymbol('(')">(</button>
-        <button class="Bt2" onclick="insertSymbol('[')">[</button>
-        <button class="Bt2" onclick="insertSymbol('{')">{</button>
-        <button class="Bt2" onclick="insertSymbol('}')">}</button>
-        <button class="Bt2" onclick="insertSymbol(']')">]</button>
-        <button class="Bt2" onclick="insertSymbol(')')">)</button>
-        <button class="Bt2" onclick="insertSymbol('~')">~</button>
-        <button class="Bt2" onclick="insertSymbol('∧')">∧</button>
-        <button class="Bt2" onclick="insertSymbol('∨')">∨</button>
-        <button class="Bt2" onclick="insertSymbol('Δ')">Δ</button>
-        <button class="Bt2" onclick="insertSymbol('→')">→</button>
-        <button class="Bt2" onclick="insertSymbol('↔')">↔</button>
-        <button class="Bt2" onclick="insertSymbol('p')">p</button>
-        <button class="Bt2" onclick="insertSymbol('q')">q</button>
-        <button class="Bt2" onclick="insertSymbol('r')">r</button>
+        <button class="Bt2 btn-symbol" data-symbol="(">(</button>
+        <button class="Bt2 btn-symbol" data-symbol="[">[</button>
+        <button class="Bt2 btn-symbol" data-symbol="{">{</button>
+        <button class="Bt2 btn-symbol" data-symbol="}">}</button>
+        <button class="Bt2 btn-symbol" data-symbol="]">]</button>
+        <button class="Bt2 btn-symbol" data-symbol=")">)</button>
+        <button class="Bt2 btn-symbol" data-symbol="~">~</button>
+        <button class="Bt2 btn-symbol" data-symbol="∧">∧</button>
+        <button class="Bt2 btn-symbol" data-symbol="∨">∨</button>
+        <button class="Bt2 btn-symbol" data-symbol="Δ">Δ</button>
+        <button class="Bt2 btn-symbol" data-symbol="→">→</button>
+        <button class="Bt2 btn-symbol" data-symbol="↔">↔</button>
+        <button class="Bt2 btn-symbol" data-symbol="p">p</button>
+        <button class="Bt2 btn-symbol" data-symbol="q">q</button>
+        <button class="Bt2 btn-symbol" data-symbol="r">r</button>
     </div>
 
     <!-- Panel de control de acciones -->
     <div class="Conthcc actions-container">
-        <button class="Bt2r" onclick="clearInput()" title="Limpiar todo">
+        <button id="btnClear" class="Bt2r" title="Limpiar todo">
             <img src="img/delete.png" alt="Borrar" class="Img20x20">
         </button>
 
-        <button class="Bt4b" onclick="generateTable()">Generar tabla</button>
+        <button id="btnGenerate" class="Bt4b">Generar tabla</button>
 
-        <button class="Bt2" onclick="backspace()" title="Retroceder">
+        <button id="btnBackspace" class="Bt2" title="Retroceder">
             <img src="img/backspace.png" alt="Atrás" class="Img20x20">
         </button>
     </div>
@@ -61,113 +61,20 @@
         </div>
     </div>
 </main>
+
 <!--Pie de pagina-->
 <footer class="footer-credits">
     <p>Creado por <a href="https://github.com/juovvar/simulador" target="_blank" rel="noopener noreferrer" class="author-link">juovvar</a></p>
     <p class="copyright">Todos los derechos reservados &copy; 2026</p>
 </footer>
+
 <!-- Cambio de tema (Claro / Oscuro) -->
 <div class="theme-toggle-container">
     <button id="themeToggleBtn" class="theme-btn" aria-label="Cambiar tema">
         <span id="themeIcon">💡</span> <!-- Foco encendido por defecto -->
     </button>
 </div>
-<script>
-    const input = document.getElementById('expressionInput');
 
-    function insertSymbol(symbol) {
-        input.value += symbol;
-    }
-
-    function clearInput() {
-        input.value = '';
-        document.getElementById('tableContainer').innerHTML = '';
-    }
-
-    function backspace() {
-        input.value = input.value.slice(0, -1);
-    }
-
-    function generateTable() {
-        const expr = input.value.trim();
-        if (!expr) {
-            document.getElementById('tableContainer').innerHTML =
-                '<p class="Txwarning">Por favor, ingrese una expresión proposicional.</p>';
-            return;
-        }
-
-        fetch('/api/evaluar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ expresion: expr })
-        })
-            .then(async response => {
-                const data = await response.json();
-                if (!response.ok) {
-                    throw new Error(data.error || 'Error al procesar la expresión');
-                }
-                return data;
-            })
-            .then(data => renderTable(data))
-            .catch(err => {
-                document.getElementById('tableContainer').innerHTML =
-                    `<p class="Txwarning">${err.message}</p>`;
-            });
-    }
-
-    function renderTable(data) {
-        const container = document.getElementById('tableContainer');
-
-        let html = '<table>';
-
-        // Encabezado
-        html += '<thead><tr>';
-        data.headers.forEach(header => {
-            html += `<th>${header}</th>`;
-        });
-        html += '</tr></thead>';
-
-        // Filas
-        html += '<tbody>';
-        data.rows.forEach(row => {
-            html += '<tr>';
-            row.forEach((val, index) => {
-                if (index === row.length - 1) {
-                    const resultClass = (val === 'V') ? 'alt_green' : 'alt_red';
-                    html += `<td class="${resultClass}"><strong>${val}</strong></td>`;
-                } else {
-                    html += `<td>${val}</td>`;
-                }
-            });
-            html += '</tr>';
-        });
-        html += '</tbody></table>';
-
-        container.innerHTML = html;
-    }
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeIcon = document.getElementById('themeIcon');
-
-    // Revisa si el usuario ya tenía guardado un tema previamente
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeIcon.textContent = '🔌'; // Foco apagado/desenchufado para modo oscuro
-    } else {
-        themeIcon.textContent = '💡'; // Foco encendido para modo claro
-    }
-
-    themeToggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-
-        const isDarkMode = document.body.classList.contains('dark-mode');
-
-        // Cambia el icono del foco segun el estado
-        themeIcon.textContent = isDarkMode ? '🔌' : '💡';
-
-        // Guarda la preferencia
-        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    });
-</script>
+<script src="app.js"></script>
 </body>
 </html>
