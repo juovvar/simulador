@@ -1,6 +1,7 @@
 package com.simulador;
 
 import com.sun.net.httpserver.HttpServer;
+import com.simulador.handler.SecurityHandlerDecorator;
 import com.simulador.handler.StaticFileHandler;
 import com.simulador.handler.TruthTableHandler;
 import java.io.IOException;
@@ -17,9 +18,9 @@ public class Main {
             // Esto permite trafico externo al simulador
             HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", port), 0);
 
-            // Enruta las peticiones
-            server.createContext("/", new StaticFileHandler());
-            server.createContext("/api/evaluar", new TruthTableHandler());
+            // Enruta las peticiones aplicando las cabeceras de seguridad
+            server.createContext("/", new SecurityHandlerDecorator(new StaticFileHandler()));
+            server.createContext("/api/evaluar", new SecurityHandlerDecorator(new TruthTableHandler()));
 
             // Pool de hilos para gestionar peticiones concurrentes
             server.setExecutor(Executors.newFixedThreadPool(10));
