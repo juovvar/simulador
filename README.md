@@ -18,22 +18,24 @@ Aplicación web de un simulador de tablas de verdad. El proyecto está desarroll
 El proyecto sigue la convención estándar de Maven:
 
 ```text
-simulador-tablas-verdad/
+SimuladorTablasVerdad/
 ├── pom.xml
 └── src/
     └── main/
         ├── java/
         │   └── com/
         │       └── simulador/
-        │           ├── Main.java                 # Punto de entrada y configuración del HttpServer
+        │           ├── Main.java                
         │           ├── handler/
-        │           │   ├── StaticFileHandler.java # Servidor de archivos estáticos (HTML, CSS, JS, PNG)
-        │           │   └── TruthTableHandler.java # Endpoint REST API que procesa la petición JSON
+        │           │   ├── SecurityHandlerDecorator.java
+        │           │   |── StaticFileHandler.java 
+        |           |   └── TruthTableHandler.java  
         │           └── logic/
-        │               ├── Evaluator.java         # Motor de lógica formal, RPN y validaciones
-        │               └── TableGenerator.java    # Generador combinatorio y formateador de JSON
+        │               ├── Evaluator.java        
+        │               └── TableGenerator.java    
         └── resources/
             └── static/
-                ├── index.html                 # Interfaz de usuario
-                ├── style.css                  # Contenedores
-                └── img/                       # Iconos
+                ├── index.html                 
+                ├── style.css
+                ├── app.js                 
+                └── img/                       
