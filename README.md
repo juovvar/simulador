@@ -46,15 +46,3 @@ SimuladorTablasVerdad/
 ```
 
 ---
-
-## Configuración
-
-Variables de entorno opcionales:
-
-| Variable | Valor por defecto | Descripción |
-|---|---|---|
-| `PORT` | `8080` | Puerto HTTP (1-65535). |
-| `RATE_LIMIT_PER_MINUTE` | `120` | Peticiones por minuto y por cliente permitidas en `/api/evaluar`. |
-| `TRUST_PROXY` | `false` | Con `true`, identifica al cliente por la última IP de `X-Forwarded-For`. Actívalo solo detrás de un proxy inverso confiable. |
-
-Los tiempos máximos del servidor HTTP se pueden ajustar con `-Dsun.net.httpserver.maxReqTime=<segundos>` y `-Dsun.net.httpserver.maxRspTime=<segundos>` (10 s por defecto).
