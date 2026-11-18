@@ -3,72 +3,74 @@ package com.simulador.handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.simulador.logic.TableGenerator;
+import com.simulador.util.HttpResponses;
+import com.simulador.util.Json;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 public class TruthTableHandler implements HttpHandler {
+
+    // Tamaño maximo del cuerpo (la expresion admite 50 caracteres; 1 KB deja margen al JSON)
+    private static final int MAX_BODY_BYTES = 1024;
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         // Permite solo peticiones POST
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(451, -1);
+            HttpResponses.sendMethodNotAllowed(exchange, "POST");
             return;
         }
 
-        // Lee el cuerpo de la peticion HTTP (JSON)
-        InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
-        BufferedReader br = new BufferedReader(isr);
-        StringBuilder jsonBuilder = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            jsonBuilder.append(line);
+        // Exige JSON como tipo de contenido
+        if (!isJsonContentType(exchange.getRequestHeaders().getFirst("Content-Type"))) {
+            HttpResponses.sendJsonError(exchange, 415, "El tipo de contenido debe ser application/json.");
+            return;
         }
 
-        String requestBody = jsonBuilder.toString();
-        // Extrae el valor del parametro "expresion" sin librerias externas
-        String expression = extractJsonValue(requestBody, "expresion");
+        // Rechaza cuerpos demasiado grandes antes de leerlos (Prevencion DoS)
+        if (declaredLength(exchange) > MAX_BODY_BYTES) {
+            HttpResponses.sendJsonError(exchange, 413, "La petición excede el tamaño máximo permitido.");
+            return;
+        }
 
-        String jsonResponse;
-        int statusCode = 200;
+        // Lee como maximo MAX_BODY_BYTES + 1 bytes, sin importar lo que declare el cliente
+        byte[] body;
+        try (InputStream is = exchange.getRequestBody()) {
+            body = is.readNBytes(MAX_BODY_BYTES + 1);
+        }
+        if (body.length > MAX_BODY_BYTES) {
+            HttpResponses.sendJsonError(exchange, 413, "La petición excede el tamaño máximo permitido.");
+            return;
+        }
 
         try {
+            String expression = Json.parseFlatObject(new String(body, StandardCharsets.UTF_8)).get("expresion");
+
             // Genera la tabla usando nuestro motor logico
-            jsonResponse = TableGenerator.generateJsonTable(expression);
-        } catch (Exception e) {
-            statusCode = 400;
-            jsonResponse = "{\"error\": \"" + escapeJson(e.getMessage()) + "\"}";
-        }
-
-        // Envia la respuesta HTTP
-        byte[] responseBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
-        exchange.sendResponseHeaders(statusCode, responseBytes.length);
-
-        try (OutputStream os = exchange.getResponseBody()) {
-            os.write(responseBytes);
+            HttpResponses.sendJson(exchange, 200, TableGenerator.generateJsonTable(expression));
+        } catch (IllegalArgumentException e) {
+            // Solo los errores de validacion controlados se devuelven al cliente
+            HttpResponses.sendJsonError(exchange, 400, e.getMessage());
         }
     }
 
-    private String extractJsonValue(String json, String key) {
-        String search = "\"" + key + "\"";
-        int startKey = json.indexOf(search);
-        if (startKey == -1) return "";
-        int startColon = json.indexOf(":", startKey);
-        int startQuote = json.indexOf("\"", startColon);
-        int endQuote = json.indexOf("\"", startQuote + 1);
-        if (startQuote != -1 && endQuote != -1) {
-            return json.substring(startQuote + 1, endQuote);
-        }
-        return "";
+    private boolean isJsonContentType(String contentType) {
+        if (contentType == null) return false;
+        String mediaType = contentType.split(";", 2)[0].trim().toLowerCase(Locale.ROOT);
+        return mediaType.equals("application/json");
     }
 
-    private String escapeJson(String text) {
-        if (text == null) return "";
-        return text.replace("\\", "\\\\").replace("\"", "\\\"");
+    // Devuelve el Content-Length declarado, o -1 si no existe (p. ej. chunked)
+    private long declaredLength(HttpExchange exchange) {
+        String header = exchange.getRequestHeaders().getFirst("Content-Length");
+        if (header == null) return -1;
+        try {
+            return Long.parseLong(header.trim());
+        } catch (NumberFormatException e) {
+            return Long.MAX_VALUE;
+        }
     }
 }

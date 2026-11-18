@@ -20,6 +20,26 @@ public class Evaluator {
         if (!expr.matches(regex)) {
             throw new IllegalArgumentException("Entrada no válida. Solo se permiten los símbolos del teclado virtual.");
         }
+
+        validateDelimiterPairs(expr);
+    }
+
+    // Verifica que cada delimitador cierre con su pareja: ( ), [ ], { }
+    private static void validateDelimiterPairs(String expr) {
+        Deque<Character> open = new ArrayDeque<>();
+        for (char c : expr.toCharArray()) {
+            if (c == '(' || c == '[' || c == '{') {
+                open.push(c);
+            } else if (c == ')' || c == ']' || c == '}') {
+                char expected = c == ')' ? '(' : c == ']' ? '[' : '{';
+                if (open.isEmpty() || open.pop() != expected) {
+                    throw new IllegalArgumentException("Delimitadores desbalanceados.");
+                }
+            }
+        }
+        if (!open.isEmpty()) {
+            throw new IllegalArgumentException("Delimitadores desbalanceados.");
+        }
     }
 
     // Normaliza solo delimitadores a parentesis para el parser
@@ -46,12 +66,21 @@ public class Evaluator {
         Stack<String> stack = new Stack<>();
         int i = 0;
         int n = expr.length();
+        // Gramatica infija: tras un operador o '(' se espera operando; tras un operando, operador binario o ')'
+        boolean expectOperand = true;
 
         while (i < n) {
             char c = expr.charAt(i);
+            boolean isOperandStart = (c >= 'a' && c <= 'z') || c == '(' || c == '~';
+            if (expectOperand != isOperandStart) {
+                throw new IllegalArgumentException(expectOperand
+                        ? "Expresión mal formada: falta un operando antes de '" + c + "' (posición " + (i + 1) + ")."
+                        : "Expresión mal formada: falta un conectivo antes de '" + c + "' (posición " + (i + 1) + ").");
+            }
 
             if (c >= 'a' && c <= 'z') {
                 output.add(String.valueOf(c));
+                expectOperand = false;
                 i++;
             } else if (c == '(') {
                 stack.push("(");
@@ -84,7 +113,13 @@ public class Evaluator {
                     output.add(stack.pop());
                 }
                 stack.push(op);
+                // ~ es prefijo y sigue esperando operando; los binarios exigen uno nuevo
+                expectOperand = true;
             }
+        }
+
+        if (expectOperand) {
+            throw new IllegalArgumentException("Expresión mal formada: la expresión termina sin operando.");
         }
 
         while (!stack.isEmpty()) {

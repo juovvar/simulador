@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Accion de limpiar
     btnClear.addEventListener('click', () => {
         input.value = '';
-        tableContainer.innerHTML = '';
+        tableContainer.replaceChildren();
     });
 
     // Accion de retroceder
@@ -34,8 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateTable() {
         const expr = input.value.trim();
         if (!expr) {
-            tableContainer.innerHTML =
-                '<p class="Txwarning">Por favor, ingrese una expresión proposicional.</p>';
+            showWarning('Por favor, ingrese una expresión proposicional.');
             return;
         }
 
@@ -45,46 +44,55 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ expresion: expr })
         })
             .then(async response => {
-                const data = await response.json();
+                // Tolera respuestas no JSON (p. ej. de un proxy intermedio)
+                const data = await response.json().catch(() => ({}));
                 if (!response.ok) {
                     throw new Error(data.error || 'Error al procesar la expresión');
                 }
                 return data;
             })
             .then(data => renderTable(data))
-            .catch(err => {
-                tableContainer.innerHTML =
-                    `<p class="Txwarning">${err.message}</p>`;
-            });
+            .catch(err => showWarning(err.message));
+    }
+
+    // Los mensajes se insertan como texto, nunca como HTML
+    function showWarning(message) {
+        const p = document.createElement('p');
+        p.className = 'Txwarning';
+        p.textContent = message;
+        tableContainer.replaceChildren(p);
     }
 
     function renderTable(data) {
-        let html = '<table>';
+        const table = document.createElement('table');
 
         // Encabezado
-        html += '<thead><tr>';
+        const thead = table.createTHead();
+        const headRow = thead.insertRow();
         data.headers.forEach(header => {
-            html += `<th>${header}</th>`;
+            const th = document.createElement('th');
+            th.textContent = header;
+            headRow.appendChild(th);
         });
-        html += '</tr></thead>';
 
         // Filas
-        html += '<tbody>';
+        const tbody = table.createTBody();
         data.rows.forEach(row => {
-            html += '<tr>';
+            const tr = tbody.insertRow();
             row.forEach((val, index) => {
+                const td = tr.insertCell();
                 if (index === row.length - 1) {
-                    const resultClass = (val === 'V') ? 'alt_green' : 'alt_red';
-                    html += `<td class="${resultClass}"><strong>${val}</strong></td>`;
+                    td.className = (val === 'V') ? 'alt_green' : 'alt_red';
+                    const strong = document.createElement('strong');
+                    strong.textContent = val;
+                    td.appendChild(strong);
                 } else {
-                    html += `<td>${val}</td>`;
+                    td.textContent = val;
                 }
             });
-            html += '</tr>';
         });
-        html += '</tbody></table>';
 
-        tableContainer.innerHTML = html;
+        tableContainer.replaceChildren(table);
     }
 
     // Logica del modo claro/oscuro

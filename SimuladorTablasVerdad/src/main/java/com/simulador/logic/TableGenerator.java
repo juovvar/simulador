@@ -1,5 +1,7 @@
 package com.simulador.logic;
 
+import com.simulador.util.Json;
+
 import java.util.*;
 
 public class TableGenerator {
@@ -28,12 +30,12 @@ public class TableGenerator {
         StringBuilder json = new StringBuilder();
         json.append("{");
 
-        // Construye encabezados con escape HTML preventivo
+        // Construye encabezados con escape JSON; el cliente los renderiza como texto, no como HTML
         json.append("\"headers\":[");
         for (int i = 0; i < vars.size(); i++) {
             json.append("\"").append(vars.get(i)).append("\",");
         }
-        json.append("\"").append(escapeJson(rawExpression)).append("\"],");
+        json.append("\"").append(Json.escape(rawExpression)).append("\"],");
 
         // Construccion de filas
         json.append("\"rows\":[");
@@ -57,14 +59,5 @@ public class TableGenerator {
         json.append("]}");
 
         return json.toString();
-    }
-
-    // Sanitiza caracteres HTML para evitar XSS al renderizar la tabla
-    private static String escapeJson(String text) {
-        if (text == null) return "";
-        return text.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;");
     }
 }
